@@ -1,4 +1,4 @@
-name: Bandit SAST Scan
+name: Bandit Python Security Scan
 
 on:
   push:
@@ -8,12 +8,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  bandit-scan:
+  bandit:
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      contents: read
-      actions: read
+    name: Run Bandit Security Scan
 
     steps:
       - name: Checkout code
@@ -29,19 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install bandit
 
-      - name: Run Bandit scan and save SARIF
+      - name: Run Bandit scan
         run: |
-          echo "Running Bandit on all Python files..."
-          bandit -r . -f sarif -o bandit-results.sarif || true
-          echo "Bandit scan completed."
-
-      - name: Verify SARIF file
-        run: |
-          echo "SARIF file content preview (first 20 lines):"
-          head -n 20 bandit-results.sarif
-
-      - name: Upload SARIF file to Code Scanning
-        if: success() || failure()  # always try upload even if warnings
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: bandit-results.sarif
+          echo "Running Bandit on Python files..."
+          bandit -r . -lll
