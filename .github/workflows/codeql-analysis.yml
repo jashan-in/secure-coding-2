@@ -1,11 +1,12 @@
 name: "CodeQL"
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '0 3 * * 0'  # weekly scan (adjust if you want)
+    - cron: '0 3 * * 0'  # weekly scan (optional)
 
 jobs:
   analyze:
@@ -18,20 +19,18 @@ jobs:
 
     strategy:
       matrix:
-        language: [ 'python', 'javascript', 'java' ]
+        # Java removed because it needs a custom build
+        # 'javascript' also scans TypeScript automatically
+        language: [ 'python', 'javascript' ]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
 
-      - name: Autobuild (for compiled langs)
-        uses: github/codeql-action/autobuild@v2
-        if: matrix.language == 'java'
-
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
