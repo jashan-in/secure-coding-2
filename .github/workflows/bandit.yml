@@ -10,6 +10,10 @@ on:
 jobs:
   bandit-scan:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
     name: Run Bandit
     steps:
       - name: Checkout code
@@ -29,7 +33,7 @@ jobs:
         run: |
           bandit -r . -f sarif -o bandit-results.sarif || true
 
-      - name: Upload SARIF for Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
+      - name: Upload SARIF file to Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: bandit-results.sarif
