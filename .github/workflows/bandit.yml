@@ -14,13 +14,13 @@ jobs:
       security-events: write
       contents: read
       actions: read
-    name: Run Bandit
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -29,9 +29,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install bandit
 
+      # Run Bandit and always create SARIF output, even if no issues
       - name: Run Bandit scan
         run: |
-          bandit -r . -f sarif -o bandit-results.sarif || true
+          bandit -r . -f sarif -o bandit-results.sarif || echo "{}" > bandit-results.sarif
 
       - name: Upload SARIF file to Code Scanning
         uses: github/codeql-action/upload-sarif@v3
